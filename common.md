@@ -1,3 +1,11 @@
+Useful links
+-------------
+```
+http://www.cdrf.co/
+http://django-vanilla-views.org/
+https://ccbv.co.uk/
+```
+
 common imports
 -------------
 ```
