@@ -23,8 +23,8 @@ class Post(models.Model):
 
     @models.permalink
     def get_absolute_url(self):
-        return {'post_slug': self.slug}
-        
+        return "%s%s" % (reverse('mymodel_detail'), self.slug)
+
     def save(self, *args, **kwargs):
         """Save model and start a celery task"""
         super(Post, self).save(*args, **kwargs)
