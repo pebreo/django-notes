@@ -1,4 +1,5 @@
 
+
 dumpdata and loaddata
 --------------
 ```python
@@ -424,6 +425,23 @@ app.controller("MyCtrl"["myService", function(myService){
 }]);
 
 ```
+
+logging
+-------
+```
+import logging
+import requests
+logger = logging.getLogger(__name__)
+def get_additional_data():
+    try:
+        r = requests.get('http://exampl.com/something')
+    except requests.HTTPError as e:
+        logger.exception(e)
+        logger.debug('Could not get additional data', exc_info=True)
+        return None
+    return r
+```
+
 
 Django+IPython Notebook
 -------------
