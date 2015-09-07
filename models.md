@@ -32,12 +32,6 @@ class Post(models.Model):
 ```
 
 
-
-
-
-
-```
-
 ForeignKey vs ManyToMany Examples
 ------------------------------
 ```python
@@ -275,7 +269,41 @@ f1.profile.add(prof1)
 f1.profile.all()
 ```
 
+Twitter clone 2
+--------------
+```
 
+class TweetQuerySet(models.QuerySet):
+    def get_user(username)
+        return self.filter(username=username)
+        
+    def get_followers(self, username):
+       return [user.follower for user in self.get_username(username)]
+
+    def get_following(self, username):
+       return [user.following for user in self.get_username(username)]
+
+class TweetUserManager(models.Manager):
+    def get_queryset(self):
+        return TweetQuerySet(self.model, using=self._db)
+    def get_followers(self, username)
+        self.get_queryset().get_followers(username)
+    
+    def get_following(self, username)
+        self.get_queryset().get_following(username)
+        
+class TweetUser(models.Model):
+    username = models.CharField(max_length=255)
+    follower = models.ForeignKey("self", null=True, blank=True)
+    following = models.ForeignKey("self", null=True, blank=True) 
+    
+    def get_followers(self, username):
+       return [item.follower for item self.filter(username=self.username)
+    
+    def get_following(self, username):
+       return [item.following for item self.filter(username=self.username)
+    
+```
 Django ORM Queries
 -----------------
 ```python
