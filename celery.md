@@ -4,7 +4,7 @@ Installation
 ```
 source: https://realpython.com/blog/python/asynchronous-tasks-with-django-and-celery/
 
-$ pip install -r requirements.txt
+$ pip install celery
 $ brew install redis
 
 # start redis
