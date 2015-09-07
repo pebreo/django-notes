@@ -1,4 +1,35 @@
+common imports
+-------------
+```
 
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render, redirect, get_object_or_404
+from django.core.urlresolvers import reverse
+from django.http import Http404
+
+from django.contrib.auth.decorators import login_required # @login_required(login_url='/login')
+
+from django.contrib.auth import authenticate, login, logout
+from django.utils.safestring import mark_safe
+from django.contrib import messages
+
+# exceptions
+from django.db import IntegrityError
+from django.exceptions import ObjectDoesNotExist, PermissionDenied
+# MyModel.DoesNotExist
+
+from apps.videos.models import Video
+
+def index(request):
+    """ Home page view for chipy """
+    try:
+        meeting = Meeting.objects.latest('when')
+        num_rsvped = Person.objects.filter(ynm='Y').count()
+    except (KeyError, Meeting.DoesNotExist, Person.DoesNotExist):
+        raise Http404
+
+    return render(request,'wordcount/login.html')
+```
 
 dumpdata and loaddata
 --------------
