@@ -82,6 +82,7 @@ from django import forms
 from . import models
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
+
 class MyModForm(forms.ModelForm):
     class Meta:
         model = models.MyMod
@@ -94,7 +95,9 @@ class MyModForm(forms.ModelForm):
         self.helper.layout.append(Submit('save','Save')
         
 # views
+from django.utils.decorators import method_decorator
 from django.cor.urlresolvers import reverse_lazy
+
 from . import forms
 
 class MyModDetail(generic.UpdateView):
@@ -104,12 +107,25 @@ class MyModDetail(generic.UpdateView):
 class MyModCreate(generic.UpdateView):
     model = MyMod
     form_class = forms.MyForm
+    template_name = 'foo/bar.html'
+    
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(MyModCreate, self).dispatch(*args, **kwargs)
+    
+    def form_valid(self, form):
+        send_activation_email(self.request.user)
+        text = form.cleaned_data['text']
+        user = self.request.user
+        Post.objects.create(user=user, text=text)
+        messages.success(self.request, "Success",extra_tags='alert-success')
+        return HttpResponseRedirect(self.request.get_full_path())
 
 class MyModUpdate(generic.UpdateView):
     model = MyMod
     form_class = forms.MyForm
 
-class MyModDetele(generic.DeleteView):
+class MyModDelete(generic.DeleteView):
     model = MyMod
     success_url = reverse('mymod_list_view')
 
