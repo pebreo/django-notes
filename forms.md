@@ -19,7 +19,7 @@ request.POST.get('comment_id')
 
 CBV forms
 ----------
-```
+```python
 # reference: https://ccbv.co.uk/projects/Django/1.8/django.views.generic.edit/FormView/
 
 # forms.py
@@ -68,7 +68,7 @@ url(r'^myurl/', MyView.as_view(), name='myview')
 
 CRUD operations using CBV
 ---------------------
-```
+```python
 
 # models.py
 class MyMod(models.Model):
@@ -143,7 +143,7 @@ url(r'^myurl/(?<pk>)/delete', MyModDelete.as_view(), name='mymod_delete')
 
 crispy forms example
 ------------------
-```
+```python
 install
 
 # forms.py
