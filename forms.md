@@ -66,9 +66,13 @@ url(r'^myurl/', MyView.as_view(), name='myview')
 ```    
 
 
-CRUD operations using CBV
----------------------
+Django Vanilla Views + Crispy Forms - CRUD Operations
+-------------------------------------
 ```python
+
+# install
+pip install django-vanilla-views
+pip install django-crispy-forms
 
 # models.py
 class MyMod(models.Model):
@@ -83,28 +87,30 @@ from . import models
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 
-class MyModForm(forms.ModelForm):
-    class Meta:
-        model = models.MyMod
-        fields = ['name', 'date_of_birth']
-    
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        
-        self.helper = FormHelper(self)
-        self.helper.layout.append(Submit('save','Save')
+class MyModForm(forms.Form):
+    text = forms.CharField(
+        widget=forms.Textarea(attrs={'placeholder':'Your question here.'})
+    )
+
+    def __init__(self, data=None, files=None, **kwargs):
+        super(ContactForm, self).__init__(data, files, kwargs)
+        self.helper = FormHelper()
+        self.helper.form_show_labels = False
+        # self.help.form_method = "post"
+        # self.helper.form_action = "/"
+        self.helper.add_input(Submit('submit','Submit', css_class='btn btn-block btn-primary'))
         
 # views
 from django.utils.decorators import method_decorator
 from django.cor.urlresolvers import reverse_lazy
-
+from vanilla import CreateView, UpdateView, DeleteView, DetailView
 from . import forms
 
-class MyModDetail(generic.UpdateView):
+class MyModDetail(UpdateView):
     model = MyMod
-    form_class = forms.MyForm
+    form_class = MyForm
     
-class MyModCreate(generic.UpdateView):
+class MyModCreate(CreateView):
     model = MyMod
     form_class = forms.MyForm
     template_name = 'foo/bar.html'
@@ -121,11 +127,11 @@ class MyModCreate(generic.UpdateView):
         messages.success(self.request, "Success",extra_tags='alert-success')
         return HttpResponseRedirect(self.request.get_full_path())
 
-class MyModUpdate(generic.UpdateView):
+class MyModUpdate(UpdateView):
     model = MyMod
     form_class = forms.MyForm
 
-class MyModDelete(generic.DeleteView):
+class MyModDelete(DeleteView):
     model = MyMod
     success_url = reverse('mymod_list_view')
 
@@ -137,7 +143,7 @@ url(r'^myurl/(?<pk>)/delete', MyModDelete.as_view(), name='mymod_delete')
 
 # template.html
 {% load crispy_form_tags %}
-{{ crispy form }}
+{% crispy form %}
 
 ```
 
