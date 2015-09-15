@@ -424,5 +424,6 @@ L = Entry.objects.values_list('slug')
 slugs_duplicates = [x for x, y in collections.Counter(L).items() if y > 1]
 pks_of_duplicates = Entry.objects.filter(slug__in=slugs_with_duplicates).values_list('pk')
 
+Video.objects.filter(id=1).values_list('id', flat=True)
 ```
 
