@@ -7,7 +7,7 @@ Running tests
 ./manage.py test apps.billing.tests.MyTestCase
 ```
 
-Magic and MagicMock
+MagicMock
 ----------------
 ```python
 
@@ -30,6 +30,46 @@ class CreateTransaction(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertTrue(Transaction.objects.filter(payment_type='Trial Period').exists())
 
+import factory
+
+class SnippetCreateViewTest(TestCase):
+    """
+    Test the snippet create view
+    """
+    def setUp(self):
+        self.user = UserFactory()
+        self.factory = RequestFactory()
+
+    def test_get(self):
+        """
+        Test GET requests
+        """
+        request = self.factory.get(reverse('snippet_create'))
+        request.user = self.user
+        response = SnippetCreateView.as_view()(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context_data['user'], self.user)
+        self.assertEqual(response.context_data['request'], request)
+
+
+    @patch('snippets.models.Snippet.save', MagicMock(name="save"))
+    def test_post(self):
+        """
+        Test post requests
+        """
+        # Create the request
+        data = {
+            'title': 'My snippet',
+            'content': 'This is my snippet'
+        }
+        request = self.factory.post(reverse('snippet_create'), data)
+        request.user = self.user
+        # Get the response
+        response = SnippetCreateView.as_view()(request)
+        self.assertEqual(response.status_code, 302)
+        # Check save was called
+        self.assertTrue(Snippet.save.called)
+        self.assertEqual(Snippet.save.call_count, 1)
 
 ```
 
