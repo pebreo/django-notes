@@ -127,16 +127,6 @@ class CreateUserMerchantView(TestCase):
         self.user1 = MyUser.objects.create_user(username='admin', email='testadmin@foo.com', password='test12345')
         self.user2 = MyUser.objects.create_user(username='test', email='test@foo.com', password='test12345')
 
-
-    def should_handle_when_usermerchantid_exists(self):
-        request = self.factory.post(reverse('upgrade_view_formpost'))
-        request.user = self.user1
-        expected_id = 'abc123'
-        UserMerchantId.objects.create(user=request.user, customer_id=expected_id)
-        created_merchant_id = create_usermerchant(request)
-        self.assertEqual(created_merchant_id, expected_id)
-
-
     @patch('apps.billing.views.braintree')
     def should_handle_when_usermerchant_doesnotexist_and_result_is_success(self, braintree_mock):
         request = self.factory.post(reverse('upgrade_view_formpost'))
