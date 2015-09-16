@@ -4,6 +4,86 @@ Running tests
 ```
 ./manage.py test
 ./manage.py test path/to/tests/
+./manage.py test apps.billing.tests.MyTestCase
+```
+
+Magic and MagicMock
+----------------
+```python
+
+You should use MagicMock because it is a superset of Mock.
+
+from unittest.mock import MagicMock
+import unittest.mock as mock
+
+class CreateTransaction(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.c = Client()
+        self.user = MyUser.objects.create_user(username='admin', email='testadmin@foo.com', password='test12345')
+
+    def should_handle_indexerror(self):
+        user = self.user
+        subscription_result_mock = mock.MagicMock()
+        subscription_result_mock.subscription.transactions.__getitem__.side_effect = IndexError
+        response = views.create_transaction(user, subscription_result_mock)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(Transaction.objects.filter(payment_type='Trial Period').exists())
+
+
+```
+
+
+Request Factory
+------------
+```python
+
+It is used to make a fake request which you can use to test view functions.
+
+# test.py
+    def setUp(self):
+        self.factory = RequestFactory()
+
+    def test_foo(self):
+        form_data = {'baz': 1}
+        request = self.factory.post(reverse('myview'), form_data)
+        response = views.myview(request)
+        self.assertTrue(response.status_code, 302)
+```
+
+Factory Boy
+-----------
+```python
+Factory Boy let's you create fake django model instances so you can test them.
+You can't use them when the view or function you are testing is outside of your test function though.
+
+# installation
+
+$ pip install factory-boy
+
+# test.py
+
+import factory
+
+class UserFactory(factory.Factory):
+    class Meta:
+        model = MyUser
+    username = 'admin'
+    email = 'test@foo.com'
+    password = 'baz'
+    is_member = True
+
+class UserMerchantIdFactory(factory.Factory):
+    class Meta:
+        model = UserMerchantId
+    user = factory.SubFactory(UserFactory)
+    customer_id = '123'
+
+
+merchant_obj = UserMerchantId.create() # create saved instance
+merchant_obj = UserMerchantid.build() # create unsaved instance
+
+
 ```
 
 Example: Using unittest.mock (Python 3)
