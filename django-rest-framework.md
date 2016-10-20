@@ -204,6 +204,7 @@ urlpatterns = [
 # views.py
 from prompt.models import Entry
 from rest_framework import viewsets
+from rest_framework import permissions
 from prompt.serializers import EntrySerializer
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
