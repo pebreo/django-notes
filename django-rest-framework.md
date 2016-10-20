@@ -19,17 +19,6 @@ urlpatterns = [
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]
 
-# urls.py - custom url
-from rest_framework import routers
-router = routers.DefaultRouter()
-router.register(r'journal', journal_views.EntryViewSet)
-router.register(r'prompt', prompt_views.EntryViewSet)
-
-urlpatterns = [
-    url(r'^api/', include(router.urls)),
-]
-
-
 ```
 
 
@@ -186,9 +175,21 @@ class EntryDetail(mixins.RetrieveModelMixin,
 
 ```
 
-views.py - custom url
----------------------
-```python
+Custom URL
+---------
+``` python
+
+# urls.py 
+from rest_framework import routers
+router = routers.DefaultRouter()
+router.register(r'journal', journal_views.EntryViewSet)
+router.register(r'prompt', prompt_views.EntryViewSet)
+
+urlpatterns = [
+    url(r'^api/', include(router.urls)),
+]
+
+# views.py
 from prompt.models import Entry
 from rest_framework import viewsets
 from prompt.serializers import EntrySerializer
@@ -199,10 +200,7 @@ class EntryViewSet(viewsets.ModelViewSet):
     """
     queryset = Entry.objects.all()
     serializer_class = EntrySerializer
-
-
 ```
-
 
 
 
