@@ -13,11 +13,22 @@ INSTALLED_APPS = (
 )
 
 
-# urls.py
+# urls.py - default setup
 urlpatterns = [
     ...
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]
+
+# urls.py - custom url
+from rest_framework import routers
+router = routers.DefaultRouter()
+router.register(r'journal', journal_views.EntryViewSet)
+router.register(r'prompt', prompt_views.EntryViewSet)
+
+urlpatterns = [
+    url(r'^api/', include(router.urls)),
+]
+
 
 ```
 
@@ -172,6 +183,23 @@ class EntryDetail(mixins.RetrieveModelMixin,
 
     def delete(self, request, *args, **kwargs):
         return self.destroy(request, *args, **kwargs)
+
+```
+
+views.py - custom url
+---------------------
+```python
+from prompt.models import Entry
+from rest_framework import viewsets
+from prompt.serializers import EntrySerializer
+
+class EntryViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows users to be viewed or edited.
+    """
+    queryset = Entry.objects.all()
+    serializer_class = EntrySerializer
+
 
 ```
 
