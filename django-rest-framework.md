@@ -12,6 +12,15 @@ INSTALLED_APPS = (
     'rest_framework', 
 )
 
+# this is optional
+# Use Django's standard `django.contrib.auth` permissions,
+# or allow read-only access for unauthenticated users.
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ]
+}
+
 
 # urls.py - default setup
 urlpatterns = [
