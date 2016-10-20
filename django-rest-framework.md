@@ -193,7 +193,8 @@ Custom URL
 # urls.py 
 from rest_framework import routers
 router = routers.DefaultRouter()
-router.register(r'journal', journal_views.EntryViewSet)
+router.register(r'journal', journal_views.Entry
+)
 router.register(r'prompt', prompt_views.EntryViewSet)
 
 urlpatterns = [
@@ -211,6 +212,7 @@ class EntryViewSet(viewsets.ModelViewSet):
     """
     queryset = Entry.objects.all()
     serializer_class = EntrySerializer
+    # permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly,)
 ```
 
 
