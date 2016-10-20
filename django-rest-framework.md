@@ -22,6 +22,16 @@ urlpatterns = [
 ```
 
 
+Development / Using Browsable API
+--------------------------
+```
+
+./manage.py runserver 0.0.0.0:8001
+
+browse: mysite.com/entries/1
+
+```
+
 
 models.py
 ---------
