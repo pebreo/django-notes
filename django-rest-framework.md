@@ -24,7 +24,7 @@ REST_FRAMEWORK = {
 
 # urls.py - default setup
 urlpatterns = [
-    ...
+    # will automatically take you to login
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]
 
