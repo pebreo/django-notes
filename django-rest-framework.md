@@ -203,7 +203,7 @@ router.register(r'journal', journal_views.EntryViewSet)
 router.register(r'prompt', prompt_views.EntryViewSet)
 
 urlpatterns = [
-    url(r'^api/', include(router.urls)),
+    url(r'^api/', include(router.urls)), # access custom url like this: /api/journal/1
 ]
 
 # views.py
