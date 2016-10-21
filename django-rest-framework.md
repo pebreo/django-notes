@@ -189,6 +189,11 @@ class EntryDetail(mixins.RetrieveModelMixin,
 Custom URL
 ---------
 ``` python
+# settings.py
+INSTALLED_APPS = (
+    'prompt',
+)
+
 
 # urls.py 
 from prompt import views as prompt_views
