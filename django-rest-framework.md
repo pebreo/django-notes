@@ -191,10 +191,10 @@ Custom URL
 ``` python
 
 # urls.py 
+from prompt import views as prompt_views
 from rest_framework import routers
 router = routers.DefaultRouter()
-router.register(r'journal', journal_views.Entry
-)
+router.register(r'journal', journal_views.Entry)
 router.register(r'prompt', prompt_views.EntryViewSet)
 
 urlpatterns = [
