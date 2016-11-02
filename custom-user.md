@@ -219,7 +219,7 @@ user_logged_in.connect(user_logged_in_receiver)
 
 views.py
 --------
-```
+```python
 import logging
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
