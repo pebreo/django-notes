@@ -16,6 +16,61 @@ To create a custom user you need to change the following things:
   * `auth_register()`
   * `register_submit()`
 
+Skeleton
+--------
+```python
+# models.py
+from django.contrib.auth.models impotr AbstractBaseUser
+
+class MyUser(AbstractBasUser):
+    email = models.EmailField()
+    first_name
+    last_name 
+    objects = MyUserManager()
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(MyUser)
+
+def new_user_receiver():
+    '''
+    Signal to save a unique slug
+    '''
+
+def user_logged_in_receiver()
+    '''
+    Use that to record when user logged in
+    '''
+
+# forms.py
+class LoginForm(forms.Form):
+    username
+    password
+
+class RegisterForm(forms.Form)
+    username 
+    email
+    password 
+    def clean_passowrd2()
+    def clean_username()
+    def clean_email()
+
+class UserCreationForm(forms.Form):
+    password1
+    password2
+    def clean_password2()
+    def save()
+
+class UserChangeForm(forms.Form)
+    password
+
+# views.py
+    def auth_logout()
+    def auth_login()
+    def auth_register()
+    def register_submit()
+```
+
+
 models.py
 ---------
 ```python
