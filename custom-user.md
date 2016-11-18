@@ -1,3 +1,20 @@
+Overview
+--------
+To create a custom user you need to change the following things:
+* #### models.py
+  * `MyUser(AbstractBaseUser)`
+  * `UserProfile`
+  * `MyUserManager`
+  * `new_user_receiver()`
+  * `user_logged_in_receiver()`
+* #### forms.py
+  * `LoginForm`
+  * `RegisterForm`
+* #### views.py
+  * `auth_logout()`
+  * `auth_login()`
+  * `auth_register()`
+  * `register_submit()`
 
 models.py
 ---------
