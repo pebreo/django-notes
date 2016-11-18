@@ -1,4 +1,13 @@
-
+Checklist
+--------
+In order to install Django REST Framework in your project you need to make 
+changes to:
+* `requirements.txt`
+* `settings.py`
+* `models.py`
+* `serializers.py`
+* `views.py`
+* `urls.py`
 
 Installation
 ------------
