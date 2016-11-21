@@ -1,18 +1,32 @@
 
 
 Migrations
---------
+---------- 
+Whenever we change the `models.py` file we need to
+run `manage.py makemigrations myapp` so that we can keep track of
+our database schema. Please note that destriuctive changes 
+
+The basic process for migrations (>= Django 1.7) is:
+* Step 1. Create/change the `models.py` file
+* Step 2. Make migrations files with `manage.py makemigrations myapp`
+* Step 3. Optional: preview migration files `managae.py <appname> <migration_name>
+* Step 4. Apply migrations: `./manage.py migrate`
+
+### If you're upgrading from South
+If you're starting from scratch, you should delete all South migration files
+and start over. After you delete the South migration files just do
+```
+./manage.py makemigrations
+./manage.py migrate
+```
+#### If you already have a database
+```
+./manage.py migrate --fake-initial <appname>
+```
+
 ```
 # show migrations
 ./manage.py migrate --list
-
-# For Django>=1.7
-# If you didn't change your model
-./manage.py migrate
-
-# If you changed your model
-./manage.py makemigrations
-./manage.py migrate
 
 # For Django<=1.6
 # If you changed your model
