@@ -203,6 +203,21 @@ INSTALLED_APPS = (
     'prompt',
 )
 
+#models.py
+from django.contrib.auth.models import User
+class Entry(models.Model):
+    title = models.CharField(max_length=64)
+    owner = models.ForeignKey('auth.User', on_delete=models.CASCADE)
+
+# serializers.py
+from myapp.models import Entry
+from rest_framework import serializers
+
+class EntrySerializer(serializers.HyperlinkedModelSerializer):
+    owner = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    class Meta:
+        model = Entry
+        fields = ('pk','owner','title')
 
 # urls.py 
 from prompt import views as prompt_views
