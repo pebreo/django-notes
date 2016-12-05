@@ -1,3 +1,14 @@
+Quick of Example of RESTful transactions
+----------------------------------------
+The point of REST is to have a standard practice for
+doing CRUD transactions. Here are typical REST transactions:
+* POST request to /api/articles with hdata payload to create new Article instance. 
+* PATCH request to /api/articles/1/ to partially update Article with pk of 1..save 
+* PUT request to /api/articles/1/ to completely replace Article with pk of 1. 
+* DELETE request to /api/articles/1/ to delete Article with pk of 1. 
+* GET request to /api/articles/1/ to retrieve Article with pk of 1. 
+* HEAD request to /api/articles/1/ to see if Article with pk of exists.
+
 Checklist
 --------
 In order to install Django REST Framework in your project you need to make 
@@ -224,8 +235,12 @@ from prompt import views as prompt_views
 from rest_framework import routers
 router = routers.DefaultRouter()
 router.register(r'journal', journal_views.EntryViewSet)
-router.register(r'prompt', prompt_views.EntryViewSet)
+router.register(r'prompts', prompt_views.EntryViewSet)
 
+
+# Now you can access
+# /api/journal 
+# /api/prompts
 urlpatterns = [
     url(r'^api/', include(router.urls)), # access custom url like this: /api/journal/1
 ]
