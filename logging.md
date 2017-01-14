@@ -1,4 +1,56 @@
+Overview
+---------
+In Python logging, you can filter log messages
+based on logging levels. The higher the level, the
+more rare the occurence but the less exposure, frequency.
+Here are levels
 
+* CRITICAL - most severe, least exposure, rare to get message
+* ERROR
+* WARNING
+* INFO
+* DEBUG - least severe, most exposure, will get almost every output
+
+Custom message output
+--------------------
+```
+import logging
+logging.basicConfig(format='%(asctime)s %(message)s', level=logging.DEBUG)
+logging.warning('is when this event was logged.')
+```
+
+Simple logging to file
+--------------------
+```
+import logging
+logging.basicConfig(filename='example.log',level=logging.DEBUG)
+logging.debug('This message should go to the log file')
+logging.info('So should this')
+logging.warning('And this, too')
+```
+
+Logging across multiple files
+----------------------------
+```
+# myapp.py
+import logging
+import mylib
+
+def main():
+    logging.basicConfig(filename='myapp.log', level=logging.INFO)
+    logging.info('Started')
+    mylib.do_something()
+    logging.info('Finished')
+
+if __name__ == '__main__':
+    main()
+
+# mylib.py
+import logging
+
+def do_something():
+    logging.info('Doing something')
+```
 
 settings.py
 ----------
