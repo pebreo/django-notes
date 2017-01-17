@@ -39,6 +39,9 @@ docker run -it \
 ```
 # cp the certs to host
 docker cp letsencrypt:/etc/letsencrypt/ letsencrypt
+# or
+docker cp <containerId>:/file/path/within/container /host/path/target
+
 ls letsencrypt/archive/mydomain.acme.com/
 
 

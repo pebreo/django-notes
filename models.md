@@ -32,49 +32,77 @@ class Post(models.Model):
 ```
 
 
-ForeignKey vs ManyToMany Examples
-------------------------------
-```python
-from django.db import models
+Related Names and Foreign Keys (One-to-Many Relationship)
+---------------------------------------------------------
+```
+class Author(models.Model):
+    name = models.CharField(max_length=255)
 
- # manufacturer
- class Manufacturer(models.Model):
-    name = models.CharField(blank=True, max_length=255)
-# car - use foreignkey because a car only has one manufacturer
-class Car(models.Model):
-    name = models.CharField(blank=True, max_length=255)
-    manufacturer = models.ForeignKey(Manufacturer, related_name='cars')
-'''
+class Article(models.Model):
+    author = models.ForeignKey(Author, related_name='articles')
+    title = models.CharField(max_length=255)
+```
+In this case we use a foreign key in the Article table because an article only has
+one author but an author can have many articles.
+
+We are then able to get all the related articles through 
+the Author objects like this:
+articles = Author.objects.get(id=1).articles.all()
+
+This is how you would use the models to create and get data:
+```
 from myapp.models import *
-toyota = Manufacturer(name='toyota')
-toyota.save()
 
-corolla = Car(name='corolla', manufacturer=toyota)
-corolla.save()
+# create an author
+fred = Author(name='fred')
+fred.save()
 
-Manufacturer.objects.get(name='toyota').cars.all()
-'''
-# ==========================================================================
-# recipe
-class Recipe(models.Model):
-    name = models.CharField(blank=True, max_length=255)
-# ingredient
-# use manytomany because if you delete an ingredient it won't delete the recipe
+# create an article
+art1 = Car(title='art1', author=fred)
+art1.save()
+
+# get all articles for fred
+Author.objects.get(name='fred').articles.all()
+```
+
+
+Many to Many Example (using ManyToManyField)
+-------------------------------------------
+```
 class Ingredient(models.Model):
     name = models.CharField(blank=True, max_length=255)
-    # a recipe has many ingredient
-    recipe = models.ManyToManyField(Recipe, related_name='ingredients')
-'''
-pancakes = Recipe(name='pancakes')
-pancakes.save()
+
+# use manytomany because if you delete an ingredient it won't delete the recipe
+class Recipe(models.Model):
+    name = models.CharField(blank=True, max_length=255)
+    ingredients = models.ManyToManyField(Recipe)
+
+```
+Creating and saving many to many relationships is different than
+one-to-many relationships you have to use `add()` instead of passing
+the related objected as a parameter. For example:
+```
 eggs = Ingredient(name='eggs')
 eggs.save()
-eggs.recipe.add(pancakes)
-eggs.save()
-flour = Ingredient(name='flour')
-flour.save()
-flour.recipe.add(pancakes)
-'''
+chees = Ingredient(name='cheese')
+cheese.save()
+
+omelet = Recipe(name='omelet')
+omelet.save() # you must save before you add to your ManyToManyField
+omelet.ingredients.add(eggs)
+omelet.ingredients.add(cheese)
+```
+If you want to query starting from Articles you could do this:
+```
+Recipe.objects.filter(ingredients__name='eggs')
+```
+You could also query from the ingredients side like this:
+```
+# all recipes that use eggs
+eggs.recipe_set.all()
+# or
+Ingredient.objects.get(name='eggs').recipe_set.all()
+
 ```
 
 
