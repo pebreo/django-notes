@@ -276,5 +276,123 @@ class EntryViewSet(viewsets.ModelViewSet):
 ```
 
 
+FULL EXAMPLE USING DJ REST VIEWSETS
+-----------------------------------
+ViewSets makes it easier to use `ModelViews`, `ModelSerializers`
+and the `/api/mymodel` convention for your REST API.
 
+This example using DJRest `ViewSets`
+and the api url has been customized in `urls.py`
+using `router.register()` command (see below)
+
+```python
+# urls.py
+from django.contrib import admin
+from prompt import views as prompt_views
+from rest_framework import routers
+
+router = routers.DefaultRouter()
+router.register(r'prompts', prompt_views.EntryViewSet)
+# /api/prompts
+
+from django.conf.urls import include, url
+from django.contrib import admin
+from django.views.generic import TemplateView
+
+from home import views as home_views
+
+urlpatterns = [
+    url(r'^1adminn333/', include(admin.site.urls)),
+    url(r'^app', TemplateView.as_view(template_name="apps/prompt/index.html"), name='index'),
+    url(r'^zapp', TemplateView.as_view(template_name="apps/home/index.html"), name='index'),  
+    #url(r'^', include('todo.urls')),
+
+    # home
+    url(r'^$', home_views.home, name='home'), 
+    #url(r'^', include('home.urls')),
+    
+    # /api/prompts
+    url(r'^api/', include(router.urls)),
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+]
+
+
+# models.py
+from django.db import models
+from django.contrib import admin
+from django.contrib.postgres.fields import JSONField
+import datetime
+# Create your models here.
+import pytz
+from django.utils.timezone import make_aware
+
+# Entry
+class Entry(models.Model):
+    owner = models.ForeignKey('auth.User', related_name='prompts', on_delete=models.CASCADE)
+    title = models.CharField('title', max_length=64)
+    # django 1.9+ only!!!
+    # you could download django-jsonfield package though for <= django 1.8
+    prompt = JSONField()
+    created = models.DateTimeField(blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        '''
+        override save so that i can edited created datetime
+        also, this will autosave the datetime.
+        '''
+        if not self.id:
+            self.created = make_aware(datetime.datetime.now(), timezone=pytz.timezone('America/Chicago'))
+        return super(Entry, self).save(*args, **kwargs)
+    class Meta:
+        verbose_name_plural = "entries"
+
+class EntryAdmin(admin.ModelAdmin):
+    list_display = ('created',)
+    def save_model(self, request, obj, form, change):
+        obj.owner = request.user
+        obj.save()
+admin.site.register(Entry, EntryAdmin)
+
+# serializers.py
+from prompt.models import Entry
+from rest_framework import serializers
+
+class EntrySerializer(serializers.HyperlinkedModelSerializer):
+    owner = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    class Meta:
+        model = Entry
+        fields = ('pk','owner','title', 'prompt', 'created')
+
+# views.py
+from prompt.models import Entry
+from rest_framework import viewsets
+from rest_framework import permissions
+from prompt.serializers import EntrySerializer
+
+class IsOwnerOrReadOnly(permissions.BasePermission):
+    """
+    Custom permission to only allow owners of an object to edit it.
+    """
+
+    def has_object_permission(self, request, view, obj):
+        # Read permissions are allowed to any request,
+        # so we'll always allow GET, HEAD or OPTIONS requests.
+        if request.method in permissions.SAFE_METHODS:
+            return True
+
+        # Write permissions are only allowed to the owner of the snippet.
+        return obj.owner == request.user
+
+
+class EntryViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows users to be viewed or edited.
+    """
+    queryset = Entry.objects.all()
+    serializer_class = EntrySerializer
+    permission_classes = (permissions.AllowAny,)
+    # uncomment for production/staging
+    # permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly,)
+
+```
 
