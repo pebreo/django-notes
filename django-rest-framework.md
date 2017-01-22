@@ -206,75 +206,6 @@ class EntryDetail(mixins.RetrieveModelMixin,
 
 ```
 
-Custom URL
----------
-``` python
-# settings.py
-INSTALLED_APPS = (
-    'prompt',
-)
-
-#models.py
-from django.contrib.auth.models import User
-class Entry(models.Model):
-    title = models.CharField(max_length=64)
-    owner = models.ForeignKey('auth.User', on_delete=models.CASCADE)
-
-# serializers.py
-from myapp.models import Entry
-from rest_framework import serializers
-
-class EntrySerializer(serializers.HyperlinkedModelSerializer):
-    owner = serializers.HiddenField(default=serializers.CurrentUserDefault())
-    class Meta:
-        model = Entry
-        fields = ('pk','owner','title')
-
-# urls.py 
-from prompt import views as prompt_views
-from rest_framework import routers
-router = routers.DefaultRouter()
-router.register(r'journal', journal_views.EntryViewSet)
-router.register(r'prompts', prompt_views.EntryViewSet)
-
-
-# Now you can access
-# /api/journal 
-# /api/prompts
-urlpatterns = [
-    url(r'^api/', include(router.urls)), # access custom url like this: /api/journal/1
-]
-
-# views.py
-from prompt.models import Entry
-from rest_framework import viewsets
-from rest_framework import permissions
-from prompt.serializers import EntrySerializer
-
-class IsOwnerOrReadOnly(permissions.BasePermission):
-    """
-    Custom permission to only allow owners of an object to edit it.
-    """
-
-    def has_object_permission(self, request, view, obj):
-        # Read permissions are allowed to any request,
-        # so we'll always allow GET, HEAD or OPTIONS requests.
-        if request.method in permissions.SAFE_METHODS:
-            return True
-
-        # Write permissions are only allowed to the owner of the snippet.
-        return obj.owner == request.user
-        
- 
-class EntryViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows users to be viewed or edited.
-    """
-    queryset = Entry.objects.all()
-    serializer_class = EntrySerializer
-    # permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly,)
-```
-
 
 FULL EXAMPLE USING DJ REST VIEWSETS
 -----------------------------------
@@ -286,6 +217,20 @@ and the api url has been customized in `urls.py`
 using `router.register()` command (see below)
 
 ```python
+# prompt/apps.py
+# you need an app.py in Django 1.9+
+from django.apps import AppConfig
+
+class PromptConfig(AppConfig):
+    name = 'prompt'
+    verbose_name = "Prompt App"
+
+# settings.py
+INSTALL_APPS = (
+    'prompt',
+    ..
+)
+
 # urls.py
 from django.contrib import admin
 from prompt import views as prompt_views
