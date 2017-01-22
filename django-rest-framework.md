@@ -206,6 +206,89 @@ class EntryDetail(mixins.RetrieveModelMixin,
 
 ```
 
+FUNCTIONAL VIEWS FOR REST API (MISSING IMPORTS)
+----------------------------------------------
+```python
+# prompt/urls.py
+from django.conf.urls import url
+import .views
+
+urlpatterns = [
+    url(r'snippets/$', views.snippet_list),
+    url(r'snippets/(?P<pk>[0-9]+)/$', views.snippet_detail),
+]
+
+# models.py
+class Snippet(models.Model):
+    owner = models.ForeignKey('auth.User', related_name='prompts', on_delete=models.CASCADE)
+    title = models.CharField(max_length=100, blank=True, default='')
+    code = models.TextField()
+
+
+# serializers.py
+class SnippetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Snippet
+        fields = ('id','owner','title','code')
+
+from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+from .models import Snippet
+from .serializers import SnippetSerializer
+
+from rest_framework.renderers import JSONRenderer
+from rest_framework.parsers import JSONParser
+
+# views.py
+class JSONResponse(HttpResponse):
+    def __init__(self, data, **kwargs):
+        content = JSONRenderer().render(data)
+        kwargs['content_type'] = 'application/json'
+        super(JSONResponse, self).__init__(content, **kwargs)
+
+# normally would not do this
+# /snippets
+@csrf_exempt
+def snippet_list(request):
+    if request.method = 'GET':
+        snippets = Snippet.objects.all()
+        serializer = SnippetSerializer(snippets, many=True)
+        return JSONResponse(serializer.data)
+    if request.method = 'POST':
+        data = JSONParser().parse(request)
+        serializer = SnippetSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JSONResponse(serializer.data, status=201)
+        return JSONResponse(serializer.errors, status=400)
+
+# /snippets/1
+@csrf_exempt
+def snippet_detail(request, pk):
+    try:
+        snippet = Snippet.object.get(pk=pk)
+    except Snippet.DoesNotExist:
+        return HttpResponse(status=404)
+    
+    if request.method = 'GET':
+        serializer = SnippetSerializer(snippet)
+        return JSONResponse(serializer.data)
+    
+    if request.method = 'PUT':
+        data = JSONParser().parse(request)
+        serializer = SnippetSerializer(snippet, data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JSONResponse(serializer.data)
+        return JSONResponse(serializer.errors, status=400)
+
+    if request.method = 'DELETE':
+        snippet.delete()
+        return HttpResponse(status=204)
+
+
+```
+
 
 FULL EXAMPLE USING DJ REST VIEWSETS
 -----------------------------------
