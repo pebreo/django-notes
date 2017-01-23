@@ -3,6 +3,51 @@ Overview
 --------
 Let's Encrypt is a free HTTPS signing service.
 
+SSL makes it safer for users to login with their plaintext passwords.
+Nginx needs both a certificate and a key that is signed by an authority,
+in this case, our authority is letsencrypt which gives us both the cert and the key.
+
+Nginx basic SSL script examples
+-----------------------------
+```
+server {
+
+      # [...]
+
+      listen 443; # the https port
+      ssl on; 
+      ssl_certificate      /srv/ssl/nginx.pem;
+      ssl_certificate_key  /srv/ssl/nginx.key;  
+
+      # [...]
+}
+```
+source: https://www.linode.com/docs/security/ssl/provide-encrypted-resource-access-using-ssl-certificates-on-nginx
+
+Optimizing your nginx for SSL
+-----------------------------
+```
+# nginx.conf
+
+# root of nginx.conf
+worker_processes 4;
+
+http {
+# ..
+  ssl_session_cache shared:SSL:10m;
+  ssl_session_timeout 10m;
+# ..  
+}
+
+
+server {
+#...
+  keepalive_timeout 70;
+#...  
+}
+```
+source: https://www.linode.com/docs/security/ssl/provide-encrypted-resource-access-using-ssl-certificates-on-nginx
+
 Create signed certificates using Docker Machine and Docker
 ----------------------------------------------------------
 #### Create a machine
