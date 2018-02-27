@@ -3,9 +3,10 @@
 
 ADDING ANGULAR TO DJANGO PROJECT
 -----
-* Add app to `/static` folder
-* Serve templates using a custom `AngularTemplateView`
-
+* Add app to `/static/js/app` folder
+* Add angular templates to `/templates/restangular/app`
+* Serve templates using a custom `AngularTemplateView` (This is only for
+local development. You should use AWS S3 to serve those html as static files)
 
 FULL EXAMPLE OF ANGULAR 1.x + DJANGO REST
 ------
