@@ -58,6 +58,22 @@ if ($scope.loggedIn) {
 }
 ```
 
+## verify JWT token and endpoint with curl
+====
+```bash
+$curl -X POST -d "username=cfe&password=learncode" http://127.0.0.1:8000/api/auth/token/
+
+abc123xyz
+
+$curl -H "Authorization: JWT abc123xyz" http://127.0.0.1:8000/api/comments/
+
+
+curl -X POST -H "Authorization: JWT abc123xyz" -H "Content-Type: application/json" -d '{"content":"some reply to another try"}' 'http://127.0.0.1:8000/api/comments/create/?slug=new-title&type=post&parent_id=13'
+
+
+curl http://127.0.0.1:8000/api/comments/
+```
+
 Here is a full example of a simple login AngularJS + DjangoREST app
 that includes the following sections:
 
@@ -175,79 +191,6 @@ class AngularTemplateView(View):
 
 ```
 
-## templates - home
----
-```html
-// templates/restangular
-// home.html
-
-{% load staticfiles %}
-<!DOCTYPE html>
-<html lang="en" ng-app='try'>
-  <head>
-    <base href="/">
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Try Angular 1.5</title>
-
-    <!-- Latest compiled and minified CSS -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-
-
-
-     <!-- uncomment to disable debugging -->
-    <!-- <script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js'></script> -->
-    <!-- comment to disable debugging -->
-    <script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.js'></script>
-    <script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-cookies.js'></script>
-    <script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-resource.js'></script>
-    <script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-route.js'></script>
-    <script src='https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.1.3/ui-bootstrap-tpls.min.js'></script>
-    {# <script src='{% static "js/external/dirPagination.js" %}' ></script> #}
-    <script src='{% static "js/app/app.module.js" %}' ></script>
-    <script src='{% static "js/app/app.config.js" %}' ></script>
-
-
-
-    <script src='{% static "js/app/core/video/video.module.js" %}' ></script>
-    <script src='{% static "js/app/core/video/video.service.js" %}' ></script>
-
-
-    <script src='{% static "js/app/login-detail/login-detail.module.js" %}' ></script>
-    <script src='{% static "js/app/login-detail/login-detail.component.js" %}' ></script>
-
-    <script src='{% static "js/app/utils/try-nav/try-nav.module.js" %}' ></script>
-    <script src='{% static "js/app/utils/try-nav/try-nav.directive.js" %}' ></script>
-
-    <script src='{% static "js/app/home-detail/home-detail.module.js" %}' ></script>
-    <script src='{% static "js/app/home-detail/home-detail.component.js" %}' ></script>
-
-
-    <style>
-    .new-class {
-        font-size: 72px;
-    }
-    .other-class {
-        font-size: 32px;
-    }
-    .new-class2 {
-        font-size: 120px;
-    }
-    </style>
-  </head>
-  <body>
-    <div class='container'>
-        <try-nav></try-nav>
-        <div class='col-sm-12' ng-view>
-
-        </div>
-    </div>
-
-  </body>
-</html>
-
-```
 
 ## templates - login
 ---
@@ -266,20 +209,5 @@ class AngularTemplateView(View):
 
 ```
 
-## See angular structure in restangular directory
+# See `templates/` and `static/` folders for the rest of the Angular files
 
-verify JWT token and endpoint with curl
-====
-```bash
-$curl -X POST -d "username=cfe&password=learncode" http://127.0.0.1:8000/api/auth/token/
-
-abc123xyz
-
-$curl -H "Authorization: JWT abc123xyz" http://127.0.0.1:8000/api/comments/
-
-
-curl -X POST -H "Authorization: JWT abc123xyz" -H "Content-Type: application/json" -d '{"content":"some reply to another try"}' 'http://127.0.0.1:8000/api/comments/create/?slug=new-title&type=post&parent_id=13'
-
-
-curl http://127.0.0.1:8000/api/comments/
-```
