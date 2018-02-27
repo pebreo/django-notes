@@ -52,24 +52,35 @@ $scope.doLogin = function(user){
     })
 
 }
+
+if ($scope.loggedIn) {
+    // do stuff 
+}
 ```
 
-
+Here is a full example of a simple login AngularJS + DjangoREST app
+that includes the following sections:
 
 * `settings.py` - set up specific read/write permissions for DJ REST
 * `urls.py` - setup the endpoints
+* `views.py` - contains a view to render Angular templates as a file
+  but you probably want use AWS S3 to serve these because I found
+  out that this is slow in production
 * `templates/restangular` - the html that angular will used here must be served using `AngularTemplateView`
 * `static/app` - all the angular app files will be here
 
-requirements
-=====
+
+## requirements.txt
+----
+```
 djangorestframework==3.5.4
 djangorestframework-jwt==1.11.0
-
-
-settings.py
-=====
 ```
+
+## settings.py
+----
+```python
+
 INSTALLED_APPS = [
     #...
     'rest_framework',
@@ -100,9 +111,10 @@ REST_FRAMEWORK = {
 
 ```
 
-urls.py
+## urls.py
 =====
-```
+```python
+
 from rest_framework import routers
 router = routers.DefaultRouter()
 router.register(r'videos', video_views.VideoViewSet)
@@ -123,20 +135,130 @@ urlpatterns += [
 ]
 ```
 
-views.py
+## views.py
 =====
+```python
+
+# apps/angular
+
+import os
+
+from django.conf import settings
+from django.http import HttpResponse, Http404
+
+from django.views.generic import View
+
+from django.shortcuts import render
+
+class AngularTemplateView(View):
+    def get(self, request, item=None, *args, **kwargs):
+        print(item)
+        template_dir_path = settings.TEMPLATES[0]["DIRS"][0]
+        final_path = os.path.join(template_dir_path, "restangular", "app", item + ".html" )
+        try:
+            html = open(final_path)
+            return HttpResponse(html)
+        except:
+            raise Http404
+
 ```
-# apps.angular.views
 
-# apps.videos.views
+## templates - home
+---
+```html
+// templates/restangular
+// home.html
 
-# 
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en" ng-app='try'>
+  <head>
+    <base href="/">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Try Angular 1.5</title>
+
+    <!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+
+
+     <!-- uncomment to disable debugging -->
+    <!-- <script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js'></script> -->
+    <!-- comment to disable debugging -->
+    <script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.js'></script>
+    <script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-cookies.js'></script>
+    <script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-resource.js'></script>
+    <script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-route.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.1.3/ui-bootstrap-tpls.min.js'></script>
+    {# <script src='{% static "js/external/dirPagination.js" %}' ></script> #}
+    <script src='{% static "js/app/app.module.js" %}' ></script>
+    <script src='{% static "js/app/app.config.js" %}' ></script>
+
+
+
+    <script src='{% static "js/app/core/video/video.module.js" %}' ></script>
+    <script src='{% static "js/app/core/video/video.service.js" %}' ></script>
+
+
+    <script src='{% static "js/app/login-detail/login-detail.module.js" %}' ></script>
+    <script src='{% static "js/app/login-detail/login-detail.component.js" %}' ></script>
+
+    <script src='{% static "js/app/utils/try-nav/try-nav.module.js" %}' ></script>
+    <script src='{% static "js/app/utils/try-nav/try-nav.directive.js" %}' ></script>
+
+    <script src='{% static "js/app/home-detail/home-detail.module.js" %}' ></script>
+    <script src='{% static "js/app/home-detail/home-detail.component.js" %}' ></script>
+
+
+    <style>
+    .new-class {
+        font-size: 72px;
+    }
+    .other-class {
+        font-size: 32px;
+    }
+    .new-class2 {
+        font-size: 120px;
+    }
+    </style>
+  </head>
+  <body>
+    <div class='container'>
+        <try-nav></try-nav>
+        <div class='col-sm-12' ng-view>
+
+        </div>
+    </div>
+
+  </body>
+</html>
+
 ```
 
+## templates - login
+---
+```html
+// templates/restangular
+// login-detail.html
+
+<div class='col-sm-6 col-sm-offset-3'>
+    <h1>Login</h1>
+    <form ng-submit='doLogin(user)'>
+    <input type='text' ng-model='user.email' class='form-control' placeholder='Username'>
+    <input type='password' ng-model='user.password' class='form-control'  placeholder='Password'>
+    <input type='submit' value='Login' class='btn btn-default' />
+    </form>
+</div>
+
+```
+
+## See angular structure in restangular directory
 
 verify JWT token and endpoint with curl
 ====
-```
+```bash
 $curl -X POST -d "username=cfe&password=learncode" http://127.0.0.1:8000/api/auth/token/
 
 abc123xyz
