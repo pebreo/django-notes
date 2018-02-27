@@ -88,6 +88,15 @@ INSTALLED_APPS = [
     'apps.angular',
 ]
 
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+]
+
+MEDIA_URL = '/static/media/'
+MEDIA_ROOT= os.path.join(BASE_DIR, 'static', 'media')
+
+
 REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": [
         'rest_framework.renderers.JSONRenderer',
@@ -124,9 +133,12 @@ from rest_framework_jwt.views import obtain_jwt_token
 
 from apps.angular.views import AngularTemplateView
 
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
 urlpatterns += [
-    # uses viewsets
-    url(r'^api/', include(router.urls)),
 
     # uses jwt for authentication
     url(r'^api/auth/token/', obtain_jwt_token),
