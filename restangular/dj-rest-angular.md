@@ -1,3 +1,6 @@
+# See `templates/` and `static/` folders for the rest of the Angular files
+
+
 ADDING ANGULAR TO DJANGO PROJECT
 -----
 * Add app to `/static` folder
